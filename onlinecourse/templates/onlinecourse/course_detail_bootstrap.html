@@ -1,56 +1,71 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
-     {% load static %}
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>{{ course.name }}</title>
+
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-    <meta charset="UTF-8">
 </head>
 
 <body>
-    <!-- Navigation bar -->
     <nav class="navbar navbar-light bg-light">
         <div class="container-fluid">
-            <div class="navbar-header">
-                  <a class="navbar-brand" href="{% url 'onlinecourse:index' %}">Home</a>
-            </div>
+            <a class="navbar-brand" href="{% url 'onlinecourse:index' %}">Home</a>
+
             <ul class="nav navbar-nav navbar-right">
                 {% if user.is_authenticated %}
-                <li>
-                    <a class="btn btn-link" href="#">{{ user.first_name }}({{ user.username }})</a>
-                    <a class="btn btn-link" href="{% url 'onlinecourse:logout' %}">Logout</a>
-                </li>
+                    <li class="nav-item">
+                        <span class="nav-link">
+                            {{ user.first_name }} ({{ user.username }})
+                        </span>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'onlinecourse:logout' %}">Logout</a>
+                    </li>
                 {% else %}
-                <li>
-                    <form class="form-inline" action="{% url 'onlinecourse:login' %}" method="post">
-                        {% csrf_token %}
-                        <div class="input-group">
-                            <input type="text" class="form-control" placeholder="Username" name="username" >
-                            <input type="password" class="form-control" placeholder="Username" name="psw" >
-                            <button class="btn btn-primary" type="submit">Login</button>
-                            <a class="btn btn-link" href="{% url 'onlinecourse:registration' %}">Sign Up</a>
-                        </div>
-                    </form>
-                </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'onlinecourse:login' %}">Login</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'onlinecourse:registration' %}">Sign Up</a>
+                    </li>
                 {% endif %}
             </ul>
         </div>
     </nav>
 
-    <!-- Page content -->
-    <div class="container-fluid">
+    <div class="container mt-4">
+        <div class="jumbotron">
             <h2>{{ course.name }}</h2>
-            <div class="card-columns-vertical">
-                {% for lesson in course.lesson_set.all %}
-                    <div class="card mt-1">
-                        <div class="card-header"><h5>Lesson {{lesson.order|add:1}}: {{lesson.title}}</h5></div>
-                        <div class="card-body">{{lesson.content}}</div>
-                    </div>
-                {% endfor %}
+            <p>{{ course.description }}</p>
+        </div>
+
+        <h3 class="mb-3">Course Lessons</h3>
+
+        {% for lesson in course.lesson_set.all %}
+            <div class="card mb-3">
+                <div class="card-header">
+                    <h5>
+                        Lesson {{ lesson.order|add:1 }}: {{ lesson.title }}
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <p class="card-text">{{ lesson.content }}</p>
+                </div>
             </div>
-            <!-- Course detail template changes go here -->
+        {% empty %}
+            <div class="alert alert-info">
+                No lessons are available for this course yet.
+            </div>
+        {% endfor %}
     </div>
 </body>
 </html>
+```
